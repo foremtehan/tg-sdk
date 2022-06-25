@@ -58,9 +58,9 @@ class TelegramClient
      *
      * @param TelegramRequest $request
      *
+     * @return TelegramResponse
      * @throws TelegramSDKException
      *
-     * @return TelegramResponse
      */
     public function sendRequest(TelegramRequest $request): TelegramResponse
     {
@@ -114,13 +114,17 @@ class TelegramClient
      */
     public function getBaseBotUrl(): string
     {
+        if (function_exists('config')) {
+            return config('telegram.base_url');
+        }
+
         return static::BASE_BOT_URL;
     }
 
     /**
      * Creates response object.
      *
-     * @param TelegramRequest                    $request
+     * @param TelegramRequest $request
      * @param ResponseInterface|PromiseInterface $response
      *
      * @return TelegramResponse
