@@ -4,3 +4,4 @@ vendor/
 build/
 .idea
 /.idea
+tests/Unit/ExampleTest.php
