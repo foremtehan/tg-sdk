@@ -28,7 +28,7 @@ trait CommandsHandler
 
     public static function ignoreUpdateWhen(callable $callable)
     {
-        self::$middleware = $callable(new static);
+        self::$middleware = $callable;
     }
 
     /**
@@ -68,7 +68,7 @@ trait CommandsHandler
     protected function useWebHook($commands): Update
     {
         $update = $this->getWebhookUpdate(true);
-        $this->processCommand($commands);
+        $this->processCommand($update, $commands);
 
         return $update;
     }
@@ -85,7 +85,7 @@ trait CommandsHandler
 
         foreach ($updates as $update) {
             $highestId = $update->updateId;
-            $this->processCommand($commands);
+            $this->processCommand($update, $commands);
         }
 
         //An update is considered confirmed as soon as getUpdates is called with an offset higher than it's update_id.
@@ -115,12 +115,13 @@ trait CommandsHandler
     /**
      * Check update object for a command and process.
      *
+     * @param Update $update
      * @param $commands
      * @return mixed|void
      */
-    public function processCommand($commands)
+    public function processCommand(Update $update, $commands)
     {
-        if (self::$middleware) {
+        if (self::$middleware && (self::$middleware)($update)) {
             return;
         }
 
@@ -128,7 +129,7 @@ trait CommandsHandler
 
         foreach ($commands as $command) {
             /** @var Command $command */
-            $command = new $command($this);
+            $command = new $command($this, $update);
 
             if ($command->canBeHandled()) {
                 return $command->handle();

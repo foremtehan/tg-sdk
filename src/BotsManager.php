@@ -50,9 +50,9 @@ class BotsManager
      *
      * @param string|null $name
      *
+     * @return array
      * @throws InvalidArgumentException
      *
-     * @return array
      */
     public function getBotConfig($name = null): array
     {
@@ -74,8 +74,8 @@ class BotsManager
      *
      * @param string $name
      *
-     * @throws TelegramSDKException
      * @return Api
+     * @throws TelegramSDKException
      */
     public function bot($name = null): Api
     {
@@ -93,8 +93,8 @@ class BotsManager
      *
      * @param string $name
      *
-     * @throws TelegramSDKException
      * @return Api
+     * @throws TelegramSDKException
      */
     public function reconnect($name = null): Api
     {
@@ -123,7 +123,7 @@ class BotsManager
      * Get the specified configuration value for Telegram.
      *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return mixed
      */
@@ -183,8 +183,8 @@ class BotsManager
      *
      * @param string $name
      *
-     * @throws TelegramSDKException
      * @return Api
+     * @throws TelegramSDKException
      */
     protected function makeBot($name): Api
     {
@@ -198,16 +198,9 @@ class BotsManager
             $this->getConfig('http_client_handler', null)
         );
 
-        // Check if DI needs to be enabled for Commands
-        if ($this->getConfig('resolve_command_dependencies', false) && isset($this->container)) {
+        if (isset($this->container)) {
             $telegram->setContainer($this->container);
         }
-
-        $commands = data_get($config, 'commands', []);
-        $commands = $this->parseBotCommands($commands);
-
-        // Register Commands
-        $telegram->addCommands($commands);
 
         return $telegram;
     }
@@ -274,10 +267,10 @@ class BotsManager
      * Magically pass methods to the default bot.
      *
      * @param string $method
-     * @param array  $parameters
+     * @param array $parameters
      *
-     * @throws TelegramSDKException
      * @return mixed
+     * @throws TelegramSDKException
      */
     public function __call($method, $parameters)
     {

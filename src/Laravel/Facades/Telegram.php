@@ -111,6 +111,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static getDefaultBotName()
  * @method static self setDefaultBot($name)
  * @method static array getBots()
+ * @method static void ignoreUpdateWhen(callable $callable)
  * @method static array parseBotCommands(array $commands)
  * @method static \Telegram\Bot\Objects\Update[] getUpdates(array $params = [], $shouldEmitEvents = true)
  *
