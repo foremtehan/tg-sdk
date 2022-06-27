@@ -2,7 +2,10 @@
 
 namespace Telegram\Bot\Traits;
 
-use Psr\Http\Message\RequestInterface;
+use Exception;
+use ReflectionClass;
+use Telegram\Bot\Commands\Command;
+use Symfony\Component\Finder\Finder;
 use Telegram\Bot\Objects\Update;
 use Telegram\Bot\Commands\CommandBus;
 
@@ -11,6 +14,8 @@ use Telegram\Bot\Commands\CommandBus;
  */
 trait CommandsHandler
 {
+    public static $middleware;
+
     /**
      * Return Command Bus.
      *
@@ -19,6 +24,11 @@ trait CommandsHandler
     protected function getCommandBus(): CommandBus
     {
         return CommandBus::Instance()->setTelegram($this);
+    }
+
+    public static function ignoreUpdateWhen(callable $callable)
+    {
+        self::$middleware = $callable(new static);
     }
 
     /**
@@ -35,24 +45,30 @@ trait CommandsHandler
      * Processes Inbound Commands.
      *
      * @param bool $webhook
-     * @param RequestInterface|null $request
+     * @param null $commandsPath
      * @return Update|Update[]
      */
-    public function commandsHandler(bool $webhook = false, ?RequestInterface $request = null)
+    public function commandsHandler(bool $webhook = false, $commandsPath = null)
     {
-        return $webhook ? $this->useWebHook($request) : $this->useGetUpdates();
+        $commandsPath ??= config('telegram.commands');
+
+        if (! $commandsPath) {
+            throw new Exception("Commands Not Found");
+        }
+
+        return $webhook ? $this->useWebHook($commandsPath) : $this->useGetUpdates($commandsPath);
     }
 
     /**
      * Process the update object for a command from your webhook.
      *
-     * @param RequestInterface|null $request
+     * @param $commands
      * @return Update
      */
-    protected function useWebHook(?RequestInterface $request = null): Update
+    protected function useWebHook($commands): Update
     {
-        $update = $this->getWebhookUpdate(true, $request);
-        $this->processCommand($update);
+        $update = $this->getWebhookUpdate(true);
+        $this->processCommand($commands);
 
         return $update;
     }
@@ -62,14 +78,14 @@ trait CommandsHandler
      *
      * @return Update[]
      */
-    protected function useGetUpdates(): array
+    protected function useGetUpdates($commands): array
     {
         $updates = $this->getUpdates();
         $highestId = -1;
 
         foreach ($updates as $update) {
             $highestId = $update->updateId;
-            $this->processCommand($update);
+            $this->processCommand($commands);
         }
 
         //An update is considered confirmed as soon as getUpdates is called with an offset higher than it's update_id.
@@ -99,19 +115,33 @@ trait CommandsHandler
     /**
      * Check update object for a command and process.
      *
-     * @param Update $update
+     * @param $commands
+     * @return mixed|void
      */
-    public function processCommand(Update $update)
+    public function processCommand($commands)
     {
-        $this->getCommandBus()->handler($update);
+        if (self::$middleware) {
+            return;
+        }
+
+        $commands = is_string($commands) ? $this->getCommandsFqnFromPath($commands) : $commands;
+
+        foreach ($commands as $command) {
+            /** @var Command $command */
+            $command = new $command($this);
+
+            if ($command->canBeHandled()) {
+                return $command->handle();
+            }
+        }
     }
 
     /**
      * Helper to Trigger Commands.
      *
-     * @param string $name   Command Name
+     * @param string $name Command Name
      * @param Update $update Update Object
-     * @param null   $entity
+     * @param null $entity
      *
      * @return mixed
      */
@@ -124,5 +154,15 @@ trait CommandsHandler
             $update,
             $entity
         );
+    }
+
+    private function getCommandsFqnFromPath(string $path)
+    {
+        $files = Finder::create()->in($path)->files();
+
+        return collect($files)
+            ->map(fn($fileClass) => new ReflectionClass($fileClass))
+            ->reject->isAbstract()
+            ->map(fn(ReflectionClass $r) => $r->getName());
     }
 }
