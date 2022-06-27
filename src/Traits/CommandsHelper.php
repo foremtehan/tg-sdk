@@ -4,7 +4,6 @@ namespace Telegram\Bot\Traits;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Telegram\Bot\Objects\Message;
 use Illuminate\Support\Collection;
 
 trait CommandsHelper

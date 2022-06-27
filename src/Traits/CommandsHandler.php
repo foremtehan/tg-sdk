@@ -50,7 +50,7 @@ trait CommandsHandler
      */
     public function commandsHandler(bool $webhook = false, $commandsPath = null)
     {
-        $commandsPath ??= config('telegram.commands');
+        $commandsPath ??= config('telegram.commands') ?? base_path(DIRECTORY_SEPARATOR.'App'.DIRECTORY_SEPARATOR.'TelegramHandlers');
 
         if (! $commandsPath) {
             throw new Exception("Commands Not Found");

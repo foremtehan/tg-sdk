@@ -2,7 +2,7 @@
 
 namespace Telegram\Bot\Commands;
 
-class TestCommand extends Command
+class {{ class }} extends Command
 {
     public function canBeHandled()
     {

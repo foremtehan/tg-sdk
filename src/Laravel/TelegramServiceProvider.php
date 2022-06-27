@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Telegram\Bot\Laravel\Artisan\WebhookCommand;
 use Laravel\Lumen\Application as LumenApplication;
 use Illuminate\Foundation\Application as LaravelApplication;
+use Telegram\Bot\Laravel\Artisan\TelegramHandlerMakeCommand;
 
 /**
  * Class TelegramServiceProvider.
@@ -73,6 +74,7 @@ class TelegramServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 WebhookCommand::class,
+                TelegramHandlerMakeCommand::class
             ]);
         }
     }
