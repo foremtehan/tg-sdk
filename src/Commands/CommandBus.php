@@ -53,8 +53,8 @@ class CommandBus extends AnswerBus
      *
      * @param array $commands
      *
-     * @throws TelegramSDKException
      * @return CommandBus
+     * @throws TelegramSDKException
      */
     public function addCommands(array $commands): self
     {
@@ -70,9 +70,9 @@ class CommandBus extends AnswerBus
      *
      * @param CommandInterface|string $command Either an object or full path to the command class.
      *
+     * @return CommandBus
      * @throws TelegramSDKException
      *
-     * @return CommandBus
      */
     public function addCommand($command): self
     {
@@ -163,22 +163,16 @@ class CommandBus extends AnswerBus
     /**
      * Handles Inbound Messages and Executes Appropriate Command.
      *
-     * @param $update
-     *
-     * @return Update
+     * @param Update $update
+     * @return mixed|void
      */
-    protected function handler(Update $update): Update
+    protected function handler(Update $update)
     {
-        $message = $update->getMessage();
-
-        if ($message->has('entities')) {
-            $this->parseCommandsIn($message)
-                ->each(function (array $botCommand) use ($update) {
-                    $this->process($botCommand, $update);
-                });
+        foreach ($this->commands as $command) {
+            if ($command->canBeHandled($update)) {
+                return $command->make($this->telegram, $update, $update->message->get('entities') ?? []);
+            }
         }
-
-        return $update;
     }
 
     /**
@@ -199,7 +193,7 @@ class CommandBus extends AnswerBus
     /**
      * Execute a bot command from the update text.
      *
-     * @param array  $entity
+     * @param array $entity
      * @param Update $update
      */
     protected function process($entity, Update $update)
@@ -218,7 +212,7 @@ class CommandBus extends AnswerBus
      *
      * @param string $name
      * @param Update $update
-     * @param array  $entity
+     * @param array $entity
      *
      * @return mixed
      */

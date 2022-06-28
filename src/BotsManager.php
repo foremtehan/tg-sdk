@@ -2,6 +2,9 @@
 
 namespace Telegram\Bot;
 
+use Illuminate\Support\Str;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
@@ -198,11 +201,31 @@ class BotsManager
             $this->getConfig('http_client_handler', null)
         );
 
-        if (isset($this->container)) {
+        // Check if DI needs to be enabled for Commands
+        if ($this->getConfig('resolve_command_dependencies', false) && isset($this->container)) {
             $telegram->setContainer($this->container);
         }
 
+        $commands = data_get($config, 'commands', []);
+        $commands = $this->parseBotCommands($commands);
+
+        // Register Commands
+        $telegram->addCommands($commands);
+
         return $telegram;
+    }
+
+    private function getCommandsFromFolder()
+    {
+        $path = config('telegram.commands_folder') ?? base_path('App'.DIRECTORY_SEPARATOR.'TelegramHandlers');
+
+        $files = Finder::create()->in($path)->files();
+
+        return collect($files)->map(function (SplFileInfo $f) {
+            return Str::of($f->getRealPath())
+                ->replace(['/', '.php'], ['\\', ''])
+                ->value();
+        })->all();
     }
 
     /**
@@ -214,7 +237,7 @@ class BotsManager
      */
     public function parseBotCommands(array $commands): array
     {
-        $globalCommands = $this->getConfig('commands', []);
+        $globalCommands = $this->getConfig('commands') ?? $this->getCommandsFromFolder();
         $parsedCommands = $this->parseCommands($commands);
 
         return $this->deduplicateArray(array_merge($globalCommands, $parsedCommands));
@@ -229,7 +252,7 @@ class BotsManager
      */
     protected function parseCommands(array $commands): array
     {
-        if (! is_array($commands)) {
+        if (! $commands) {
             return $commands;
         }
 

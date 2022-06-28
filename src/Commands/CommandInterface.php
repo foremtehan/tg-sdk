@@ -18,5 +18,5 @@ interface CommandInterface
 
     public function getArguments(): array;
 
-    public function make(Api $telegram, Update $update, array $entity);
+    public function make(Api $telegram, Update $update);
 }

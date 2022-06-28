@@ -2,10 +2,6 @@
 
 namespace Telegram\Bot\Traits;
 
-use Exception;
-use ReflectionClass;
-use Telegram\Bot\Commands\Command;
-use Symfony\Component\Finder\Finder;
 use Telegram\Bot\Objects\Update;
 use Telegram\Bot\Commands\CommandBus;
 
@@ -14,8 +10,6 @@ use Telegram\Bot\Commands\CommandBus;
  */
 trait CommandsHandler
 {
-    public static $middleware;
-
     /**
      * Return Command Bus.
      *
@@ -24,11 +18,6 @@ trait CommandsHandler
     protected function getCommandBus(): CommandBus
     {
         return CommandBus::Instance()->setTelegram($this);
-    }
-
-    public static function ignoreUpdateWhen(callable $callable)
-    {
-        self::$middleware = $callable;
     }
 
     /**
@@ -45,30 +34,23 @@ trait CommandsHandler
      * Processes Inbound Commands.
      *
      * @param bool $webhook
-     * @param null $commandsPath
+     *
      * @return Update|Update[]
      */
-    public function commandsHandler(bool $webhook = false, $commandsPath = null)
+    public function commandsHandler(bool $webhook = false)
     {
-        $commandsPath ??= config('telegram.commands') ?? base_path(DIRECTORY_SEPARATOR.'App'.DIRECTORY_SEPARATOR.'TelegramHandlers');
-
-        if (! $commandsPath) {
-            throw new Exception("Commands Not Found");
-        }
-
-        return $webhook ? $this->useWebHook($commandsPath) : $this->useGetUpdates($commandsPath);
+        return $webhook ? $this->useWebHook() : $this->useGetUpdates();
     }
 
     /**
      * Process the update object for a command from your webhook.
      *
-     * @param $commands
      * @return Update
      */
-    protected function useWebHook($commands): Update
+    protected function useWebHook(): Update
     {
-        $update = $this->getWebhookUpdate(true);
-        $this->processCommand($update, $commands);
+        $update = $this->getWebhookUpdate();
+        $this->processCommand($update);
 
         return $update;
     }
@@ -78,14 +60,14 @@ trait CommandsHandler
      *
      * @return Update[]
      */
-    protected function useGetUpdates($commands): array
+    protected function useGetUpdates(): array
     {
         $updates = $this->getUpdates();
         $highestId = -1;
 
         foreach ($updates as $update) {
             $highestId = $update->updateId;
-            $this->processCommand($update, $commands);
+            $this->processCommand($update);
         }
 
         //An update is considered confirmed as soon as getUpdates is called with an offset higher than it's update_id.
@@ -116,25 +98,10 @@ trait CommandsHandler
      * Check update object for a command and process.
      *
      * @param Update $update
-     * @param $commands
-     * @return mixed|void
      */
-    public function processCommand(Update $update, $commands)
+    public function processCommand(Update $update)
     {
-        if (self::$middleware && (self::$middleware)($update)) {
-            return;
-        }
-
-        $commands = is_string($commands) ? $this->getCommandsFqnFromPath($commands) : $commands;
-
-        foreach ($commands as $command) {
-            /** @var Command $command */
-            $command = new $command($this, $update);
-
-            if ($command->canBeHandled()) {
-                return $command->handle();
-            }
-        }
+        $this->getCommandBus()->handler($update);
     }
 
     /**
@@ -155,15 +122,5 @@ trait CommandsHandler
             $update,
             $entity
         );
-    }
-
-    private function getCommandsFqnFromPath(string $path)
-    {
-        $files = Finder::create()->in($path)->files();
-
-        return collect($files)
-            ->map(fn($fileClass) => new ReflectionClass($fileClass))
-            ->reject->isAbstract()
-            ->map(fn(ReflectionClass $r) => $r->getName());
     }
 }
