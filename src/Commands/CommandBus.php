@@ -76,26 +76,19 @@ class CommandBus extends AnswerBus
      */
     public function addCommand($command): self
     {
-        $command = $this->resolveCommand($command);
+        $this->commands[] = $this->resolveCommand($command);
 
-        /*
-         * At this stage we definitely have a proper command to use.
-         *
-         * @var Command $command
-         */
-        $this->commands[$command->getName()] = $command;
-
-        $aliases = $command->getAliases();
-
-        if (empty($aliases)) {
-            return $this;
-        }
-
-        foreach ($command->getAliases() as $alias) {
-            $this->checkForConflicts($command, $alias);
-
-            $this->commandAliases[$alias] = $command;
-        }
+//        $aliases = $command->getAliases();
+//
+//        if (empty($aliases)) {
+//            return $this;
+//        }
+//
+//        foreach ($command->getAliases() as $alias) {
+//            $this->checkForConflicts($command, $alias);
+//
+//            $this->commandAliases[$alias] = $command;
+//        }
 
         return $this;
     }
@@ -236,18 +229,7 @@ class CommandBus extends AnswerBus
      */
     private function resolveCommand($command)
     {
-        $command = $this->makeCommandObj($command);
-
-        if (! ($command instanceof CommandInterface)) {
-            throw new TelegramSDKException(
-                sprintf(
-                    'Command class "%s" should be an instance of "Telegram\Bot\Commands\CommandInterface"',
-                    get_class($command)
-                )
-            );
-        }
-
-        return $command;
+        return $this->makeCommandObj($command);
     }
 
     /**
@@ -282,20 +264,11 @@ class CommandBus extends AnswerBus
      * @param $command
      *
      * @return object
-     * @throws TelegramSDKException
      */
     private function makeCommandObj($command)
     {
         if (is_object($command)) {
             return $command;
-        }
-        if (! class_exists($command)) {
-            throw new TelegramSDKException(
-                sprintf(
-                    'Command class "%s" not found! Please make sure the class exists.',
-                    $command
-                )
-            );
         }
 
         if ($this->telegram->hasContainer()) {
