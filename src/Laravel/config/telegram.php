@@ -15,15 +15,9 @@ return [
 //        Telegram\Bot\Commands\TestCommand::class,
     ],
 
-    'command_groups' => [
-        //
-    ],
+    'command_groups' => [],
 
-    'shared_commands' => [
-        // 'start' => Acme\Project\Commands\StartCommand::class,
-        // 'stop' => Acme\Project\Commands\StopCommand::class,
-        // 'status' => Acme\Project\Commands\StatusCommand::class,
-    ],
+    'shared_commands' => [],
 
     'bots' => [
         'mybot' => [

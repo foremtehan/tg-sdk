@@ -216,21 +216,21 @@ class BotsManager
 
     private function getCommandsFromFolder(string $path = null)
     {
-        $path ??= base_path('App'.DIRECTORY_SEPARATOR.'TelegramHandlers');
+        $path ??= base_path('app'.DIRECTORY_SEPARATOR.'TelegramHandlers');
 
         $files = Finder::create()->in($path)->files();
 
-        return collect($files)->map(function (SplFileInfo $f) {
-            return Str::of($f->getRealPath())
-                ->after('src')
-                ->replace(['/', '.php'], ['\\', ''])
-                ->prepend('App')
-                ->value();
-        })->filter(function ($namespace) {
-            $ref = new ReflectionClass($namespace);
+        $namespace = app()->getNamespace();
 
-            return $ref->isInstantiable();
-        });
+        return collect($files)
+            ->map(fn($file) => $namespace.str_replace(
+                    ['/', '.php'],
+                    ['\\', ''],
+                    Str::after($file->getRealPath(), realpath(app_path()).DIRECTORY_SEPARATOR)
+                ))->map(fn($fileClass) => new ReflectionClass($fileClass))
+            ->filter->isInstantiable()
+            ->map->getName()
+            ->all();
     }
 
     /**
