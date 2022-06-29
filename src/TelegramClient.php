@@ -13,9 +13,6 @@ use Telegram\Bot\HttpClients\HttpClientInterface;
  */
 class TelegramClient
 {
-    /** @var string Telegram Bot API URL. */
-    const BASE_BOT_URL = 'https://api.telegram.org/bot';
-
     /** @var HttpClientInterface|null HTTP Client. */
     protected $httpClientHandler;
 
@@ -114,11 +111,7 @@ class TelegramClient
      */
     public function getBaseBotUrl(): string
     {
-        if (function_exists('config')) {
-            return config('telegram.base_url');
-        }
-
-        return static::BASE_BOT_URL;
+        return config('telegram.base_url');
     }
 
     /**

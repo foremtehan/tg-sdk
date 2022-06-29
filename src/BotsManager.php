@@ -2,6 +2,7 @@
 
 namespace Telegram\Bot;
 
+use ReflectionClass;
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -223,9 +224,15 @@ class BotsManager
 
         return collect($files)->map(function (SplFileInfo $f) {
             return Str::of($f->getRealPath())
+                ->after('src')
                 ->replace(['/', '.php'], ['\\', ''])
+                ->prepend('App')
                 ->value();
-        })->all();
+        })->filter(function ($namespace) {
+            $ref = new ReflectionClass($namespace);
+
+            return $ref->isInstantiable();
+        });
     }
 
     /**

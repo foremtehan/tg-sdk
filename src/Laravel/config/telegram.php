@@ -9,7 +9,7 @@ return [
 
     'resolve_command_dependencies' => true,
 
-    'base_url' => \Telegram\Bot\TelegramClient::BASE_BOT_URL,
+    'base_url' => 'https://api.telegram.org/bot',
 
     'commands' => [
         Telegram\Bot\Commands\TestCommand::class,

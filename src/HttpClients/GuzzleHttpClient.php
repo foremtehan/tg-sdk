@@ -100,7 +100,7 @@ class GuzzleHttpClient implements HttpClientInterface
             }
 
             if (! $response instanceof ResponseInterface) {
-                throw new TelegramSDKException($e->getMessage(), $e->getCode(), $e);
+                throw new TelegramSDKException($e->getMessage(), $e->getCode(), $e, $options);
             }
         }
 
