@@ -1,6 +1,6 @@
 <?php
 
-namespace Telegram\Bot\Commands;
+namespace {{ namespace }};
 
 class {{ class }} extends Command
 {
