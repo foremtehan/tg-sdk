@@ -4,6 +4,7 @@ namespace Telegram\Bot\Objects;
 
 use Illuminate\Support\Collection;
 use Telegram\Bot\Traits\CommandsHelper;
+use Illuminate\Support\Traits\Macroable;
 use Telegram\Bot\Objects\Payments\PreCheckoutQuery;
 use Telegram\Bot\Objects\Payments\ShippingQuery;
 
@@ -35,7 +36,7 @@ use Telegram\Bot\Objects\Payments\ShippingQuery;
  */
 class Update extends BaseObject
 {
-    use CommandsHelper;
+    use CommandsHelper, Macroable;
 
     /**
      * {@inheritdoc}
