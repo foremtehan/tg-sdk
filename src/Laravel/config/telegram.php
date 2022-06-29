@@ -12,7 +12,7 @@ return [
     'base_url' => 'https://api.telegram.org/bot',
 
     'commands' => [
-        Telegram\Bot\Commands\TestCommand::class,
+//        Telegram\Bot\Commands\TestCommand::class,
     ],
 
     'command_groups' => [

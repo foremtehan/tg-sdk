@@ -202,23 +202,21 @@ class BotsManager
             $this->getConfig('http_client_handler', null)
         );
 
-        // Check if DI needs to be enabled for Commands
         if ($this->getConfig('resolve_command_dependencies', false) && isset($this->container)) {
             $telegram->setContainer($this->container);
         }
 
-        $commands = data_get($config, 'commands', []);
-        $commands = $this->parseBotCommands($commands);
+        $botLocalCommands = data_get($config, 'commands');
+        $commands = $this->parseBotCommands($botLocalCommands);
 
-        // Register Commands
         $telegram->addCommands($commands);
 
         return $telegram;
     }
 
-    private function getCommandsFromFolder()
+    private function getCommandsFromFolder(string $path = null)
     {
-        $path = config('telegram.commands_folder') ?? base_path('App'.DIRECTORY_SEPARATOR.'TelegramHandlers');
+        $path ??= base_path('App'.DIRECTORY_SEPARATOR.'TelegramHandlers');
 
         $files = Finder::create()->in($path)->files();
 
@@ -238,16 +236,16 @@ class BotsManager
     /**
      * Builds the list of commands for the given commands array.
      *
-     * @param array $commands
+     * @param array|string $commands
      *
      * @return array An array of commands which includes global and bot specific commands.
      */
-    public function parseBotCommands(array $commands): array
+    public function parseBotCommands($commands)
     {
-        $globalCommands = $this->getConfig('commands') ?? $this->getCommandsFromFolder();
-        $parsedCommands = $this->parseCommands($commands);
+        $globalCommands = $this->getConfig('commands', []);
+        $botCommands = is_array($commands) ? $commands : $this->getCommandsFromFolder(is_string($commands) ? $commands : null);
 
-        return $this->deduplicateArray(array_merge($globalCommands, $parsedCommands));
+        return $this->deduplicateArray(array_merge($globalCommands, $botCommands));
     }
 
     /**
@@ -257,7 +255,7 @@ class BotsManager
      *
      * @return array
      */
-    protected function parseCommands(array $commands): array
+    protected function parseCommands($commands)
     {
         if (! $commands) {
             return $commands;
