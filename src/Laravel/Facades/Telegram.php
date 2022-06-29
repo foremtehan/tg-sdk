@@ -114,6 +114,9 @@ use Illuminate\Support\Facades\Facade;
  * @method static void ignoreUpdateWhen(callable $callable)
  * @method static array parseBotCommands(array $commands)
  * @method static \Telegram\Bot\Objects\Update[] getUpdates(array $params = [], $shouldEmitEvents = true)
+ * @method static \Telegram\Bot\Objects\Message toOwner(string $message)
+ * @method static string link(string $fileId)
+ * @method static string download(string $fileId)
  *
  * @see \Telegram\Bot\Api
  * @see \Telegram\Bot\BotsManager
