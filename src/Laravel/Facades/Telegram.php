@@ -118,7 +118,9 @@ use Illuminate\Support\Facades\Facade;
  * @method static string download(string $fileId)
  * @method static string handleUpdateOnly(callable $callable)
  * @method static string ignoreUpdateWhen(callable $callable)
- * @method static void onlyResponseToOwnerWhenChatIsPrivate()
+ * @method static void allowedPrivateChats(array $ids)
+ * @method static void allowedGroups(array $ids)
+ * @method static void allowedChannels(array $ids)
  *
  * @see \Telegram\Bot\Api
  * @see \Telegram\Bot\BotsManager
