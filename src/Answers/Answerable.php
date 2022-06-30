@@ -23,10 +23,7 @@ trait Answerable
 {
     use Telegram;
 
-    /**
-     * @var Update Holds an Update object.
-     */
-    protected $update;
+    protected Update $update;
 
     /**
      * Magic Method to handle all ReplyWith Methods.

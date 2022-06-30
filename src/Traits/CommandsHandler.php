@@ -134,7 +134,7 @@ trait CommandsHandler
             return;
         }
 
-        if ($update->isChannel() && CommandBus::$channelIds && ! in_array($update->chatId(), CommandBus::$channelIds)) {
+        if ($update->isChannel() && CommandBus::$channelIds && ! in_array($update->channelId(), CommandBus::$channelIds)) {
             return;
         }
 
