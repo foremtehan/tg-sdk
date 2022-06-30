@@ -97,8 +97,6 @@ class Api
         if (preg_match('/^\w+Commands?/', $method, $matches)) {
             return call_user_func_array([$this->getCommandBus(), $matches[0]], $arguments);
         }
-
-        throw new BadMethodCallException("Method [$method] does not exist.");
     }
 
     /**
