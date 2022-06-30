@@ -18,6 +18,16 @@ trait CommandsHelper
         return $this->message?->chat?->type == 'private';
     }
 
+    public function isChannel()
+    {
+        return $this->message?->chat?->type == 'channel';
+    }
+
+    public function isGroup()
+    {
+        return $this->message?->chat?->type == 'supergroup';
+    }
+
     public function isOwner(): bool
     {
         if (! $id = config('telegram.owner_id')) {

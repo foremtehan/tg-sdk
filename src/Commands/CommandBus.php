@@ -32,7 +32,11 @@ class CommandBus extends AnswerBus
 
     public static $ignoreWhen;
 
-    public static $adminOnlyInPrivateChat;
+    public static $privateIds = [];
+
+    public static $groupIds = [];
+
+    public static $channelIds = [];
 
     /**
      * Instantiate Command Bus.

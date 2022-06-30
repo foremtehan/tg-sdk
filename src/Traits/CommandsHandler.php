@@ -30,9 +30,19 @@ trait CommandsHandler
         CommandBus::$ignoreWhen = $callable;
     }
 
-    public static function onlyResponseToOwnerWhenChatIsPrivate()
+    public static function allowedPrivateChats(array $ids)
     {
-        CommandBus::$adminOnlyInPrivateChat = true;
+        CommandBus::$privateIds = $ids;
+    }
+
+    public static function allowedChannels(array $ids)
+    {
+        CommandBus::$channelIds = $ids;
+    }
+
+    public static function allowedGroups(array $ids)
+    {
+        CommandBus::$groupIds = $ids;
     }
 
     /**
@@ -120,7 +130,15 @@ trait CommandsHandler
             return;
         }
 
-        if ($update->isPrivate() && CommandBus::$adminOnlyInPrivateChat) {
+        if ($update->isPrivate() && CommandBus::$privateIds && in_array($update->userId(), CommandBus::$privateIds)) {
+            return;
+        }
+
+        if ($update->isChannel() && CommandBus::$channelIds && in_array($update->chatId(), CommandBus::$channelIds)) {
+            return;
+        }
+
+        if ($update->isGroup() && CommandBus::$groupIds && in_array($update->chatId(), CommandBus::$groupIds)) {
             return;
         }
 
