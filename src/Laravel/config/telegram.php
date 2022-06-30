@@ -7,6 +7,8 @@ return [
 
     'http_client_handler' => null,
 
+    'owner_id' => null,
+
     'resolve_command_dependencies' => true,
 
     'base_url' => 'https://api.telegram.org/bot',

@@ -8,22 +8,36 @@ use Illuminate\Support\Collection;
 
 trait CommandsHelper
 {
-    protected function chatId()
+    public function chatId()
     {
         return $this->message->chat?->id;
     }
 
-    protected function forwardedChannelPostMessageId()
+    public function isPrivate()
+    {
+        return $this->message?->chat?->type == 'private';
+    }
+
+    public function isOwner(): bool
+    {
+        if (! $id = config('telegram.owner_id')) {
+            throw new \LogicException('Owner Id Not Set in Config.');
+        }
+
+        return $id == $this->userId();
+    }
+
+    public function forwardedChannelPostMessageId()
     {
         return $this->message->replyToMessage?->forward_from_message_id;
     }
 
-    protected function userId()
+    public function userId()
     {
         return $this->message->from?->id;
     }
 
-    protected function textIs(string $input)
+    public function textIs(string $input)
     {
         return $this->text() == $input;
     }
@@ -43,7 +57,7 @@ trait CommandsHelper
         return Str::startsWith($this->text(), $input);
     }
 
-    protected function textMatch(string $pattern, string $flag = '')
+    public function textMatch(string $pattern, string $flag = '')
     {
         return Str::match("~$pattern~$flag", $this->text()) ?: null;
     }
