@@ -28,6 +28,10 @@ class CommandBus extends AnswerBus
      */
     protected $commandAliases = [];
 
+    public static $allowOnly;
+
+    public static $ignoreWhen;
+
     /**
      * Instantiate Command Bus.
      *

@@ -20,6 +20,16 @@ trait CommandsHandler
         return CommandBus::Instance()->setTelegram($this);
     }
 
+    public static function handleUpdateOnly(callable $callable)
+    {
+        CommandBus::$allowOnly = $callable;
+    }
+
+    public static function ignoreUpdateWhen(callable $callable)
+    {
+        CommandBus::$ignoreWhen = $callable;
+    }
+
     /**
      * Get all registered commands.
      *
@@ -101,6 +111,10 @@ trait CommandsHandler
      */
     public function processCommand(Update $update)
     {
+        if (value(CommandBus::$ignoreWhen, $update) || value(CommandBus::$allowOnly, $update) === false) {
+            return;
+        }
+
         $this->getCommandBus()->handler($update);
     }
 
