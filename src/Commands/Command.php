@@ -176,15 +176,13 @@ abstract class Command implements CommandInterface
      * @param Api $telegram
      * @param Update $update
      *
-     * @return mixed
+     * @return void
      */
     public function make(Api $telegram, Update $update)
     {
         $this->telegram = $telegram;
         $this->update = $update;
         $this->message = $update->message ?? new Message([]);
-
-        return $this->handle();
     }
 
     abstract public function handle();
