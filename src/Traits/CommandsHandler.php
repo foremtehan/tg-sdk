@@ -30,6 +30,11 @@ trait CommandsHandler
         CommandBus::$ignoreWhen = $callable;
     }
 
+    public static function onlyResponseToOwnerWhenChatIsPrivate()
+    {
+        CommandBus::$adminOnlyInPrivateChat = true;
+    }
+
     /**
      * Get all registered commands.
      *
@@ -112,6 +117,10 @@ trait CommandsHandler
     public function processCommand(Update $update)
     {
         if (value(CommandBus::$ignoreWhen, $update) || value(CommandBus::$allowOnly, $update) === false) {
+            return;
+        }
+
+        if ($update->isPrivate() && CommandBus::$adminOnlyInPrivateChat) {
             return;
         }
 

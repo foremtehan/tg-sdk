@@ -32,6 +32,8 @@ class CommandBus extends AnswerBus
 
     public static $ignoreWhen;
 
+    public static $adminOnlyInPrivateChat;
+
     /**
      * Instantiate Command Bus.
      *
