@@ -130,15 +130,15 @@ trait CommandsHandler
             return;
         }
 
-        if ($update->isPrivate() && CommandBus::$privateIds && in_array($update->userId(), CommandBus::$privateIds)) {
+        if ($update->isPrivate() && CommandBus::$privateIds && ! in_array($update->userId(), CommandBus::$privateIds)) {
             return;
         }
 
-        if ($update->isChannel() && CommandBus::$channelIds && in_array($update->chatId(), CommandBus::$channelIds)) {
+        if ($update->isChannel() && CommandBus::$channelIds && ! in_array($update->chatId(), CommandBus::$channelIds)) {
             return;
         }
 
-        if ($update->isGroup() && CommandBus::$groupIds && in_array($update->chatId(), CommandBus::$groupIds)) {
+        if ($update->isGroup() && CommandBus::$groupIds && ! in_array($update->chatId(), CommandBus::$groupIds)) {
             return;
         }
 
