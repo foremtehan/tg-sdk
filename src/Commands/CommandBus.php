@@ -167,13 +167,14 @@ class CommandBus extends AnswerBus
      * Handles Inbound Messages and Executes Appropriate Command.
      *
      * @param Update $update
-     * @return mixed|void
+     * @return mixed
      */
     protected function handler(Update $update)
     {
         foreach ($this->commands as $command) {
             if ($command->canBeHandled($update)) {
                 $command->make($this->telegram, $update);
+
                 return $command->handle();
             }
         }
