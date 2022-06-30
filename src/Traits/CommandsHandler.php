@@ -59,12 +59,12 @@ trait CommandsHandler
      * Processes Inbound Commands.
      *
      * @param bool $webhook
-     *
+     * @param array $params
      * @return Update|Update[]
      */
-    public function commandsHandler(bool $webhook = false)
+    public function commandsHandler(bool $webhook = false, array $params = [])
     {
-        return $webhook ? $this->useWebHook() : $this->useGetUpdates();
+        return $webhook ? $this->useWebHook() : $this->useGetUpdates($params);
     }
 
     /**
@@ -85,9 +85,10 @@ trait CommandsHandler
      *
      * @return Update[]
      */
-    protected function useGetUpdates(): array
+    protected function useGetUpdates(array $params = []): array
     {
-        $updates = $this->getUpdates();
+        $updates = $this->getUpdates($params);
+
         $highestId = -1;
 
         foreach ($updates as $update) {
