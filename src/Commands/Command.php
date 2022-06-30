@@ -192,6 +192,11 @@ abstract class Command implements CommandInterface
         return $this->getClassNameAsCommand() == $update->text();
     }
 
+    public function call(string $class, ...$args)
+    {
+        return call_user_func_array([new $class, 'handle'], $args);
+    }
+
     public function isGroupAnonymousBot()
     {
         return $this->update->userId() == 1087968824;
