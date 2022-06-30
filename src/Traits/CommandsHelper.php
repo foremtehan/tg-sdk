@@ -8,24 +8,29 @@ use Illuminate\Support\Collection;
 
 trait CommandsHelper
 {
+    public function chat()
+    {
+        return $this->message?->chat;
+    }
+
     public function chatId()
     {
-        return $this->message?->chat?->id;
+        return $this->chat()?->id;
     }
 
     public function isPrivate()
     {
-        return $this->message?->chat?->type == 'private';
+        return $this->chat()?->type == 'private';
     }
 
     public function isChannel()
     {
-        return $this->message?->chat?->type == 'channel';
+        return $this->has('channel_post');
     }
 
     public function isGroup()
     {
-        return $this->message?->chat?->type == 'supergroup';
+        return $this->chat()?->type == 'supergroup';
     }
 
     public function isOwner(): bool
