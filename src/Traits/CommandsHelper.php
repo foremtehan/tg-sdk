@@ -54,7 +54,7 @@ trait CommandsHelper
 
     public function text(): ?string
     {
-        return $this->message->text;
+        return $this->message?->text;
     }
 
     public function dot(): Collection

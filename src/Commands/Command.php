@@ -199,11 +199,6 @@ abstract class Command implements CommandInterface
         return $this->update->userId() == 1087968824;
     }
 
-    protected function senderIsChannel()
-    {
-        return $this->message?->senderChat?->id == $this->channelId;
-    }
-
     protected function getClassNameAsCommand(): string
     {
         return Str::of($this::class)->afterLast('\\')->lower()->prepend('/')->replace('command', '');

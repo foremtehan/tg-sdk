@@ -173,7 +173,7 @@ class CommandBus extends AnswerBus
     {
         foreach ($this->commands as $command) {
             if ($command->canBeHandled($update)) {
-                return $command->make($this->telegram, $update, $update->message->get('entities') ?? []);
+                return $command->make($this->telegram, $update);
             }
         }
     }
