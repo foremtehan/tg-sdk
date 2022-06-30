@@ -197,7 +197,7 @@ abstract class Command implements CommandInterface
         $command = new $class;
         $command->make($this->telegram, $this->update);
 
-        return call_user_func_array([new $class, 'handle'], $args);
+        return call_user_func_array([$command, 'handle'], $args);
     }
 
     public function isGroupAnonymousBot()
