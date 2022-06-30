@@ -52,6 +52,11 @@ trait CommandsHelper
         return $this->message->from?->id;
     }
 
+    public function channelId()
+    {
+        return $this->channelPost->channelPost->chat->id;
+    }
+
     public function textIs(string $input)
     {
         return $this->text() == $input;
