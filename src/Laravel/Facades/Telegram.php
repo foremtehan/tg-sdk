@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static int getConnectTimeOut()
  * @method static setConnectTimeOut(int $connectTimeOut)
  * @method static array getCommands()
- * @method static commandsHandler(bool $webhook = false)
+ * @method static commandsHandler(bool $webhook = false, array $params = [])
  * @method static processCommand(\Telegram\Bot\Objects\Update $update)
  * @method static triggerCommand(string $name, \Telegram\Bot\Objects\Update $update, $entity = null)
  * @method static setContainer(\Illuminate\Contracts\Container\Container $container)
