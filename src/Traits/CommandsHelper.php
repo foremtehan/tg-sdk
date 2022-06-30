@@ -67,7 +67,7 @@ trait CommandsHelper
         return new Collection(Arr::dot($this));
     }
 
-    public function textStartWith(string $input)
+    public function textStartWith(string|array $input)
     {
         return Str::startsWith($this->text(), $input);
     }
