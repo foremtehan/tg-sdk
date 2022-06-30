@@ -194,6 +194,9 @@ abstract class Command implements CommandInterface
 
     public function call(string $class, ...$args)
     {
+        $command = new $class;
+        $command->make($this->telegram, $this->update);
+
         return call_user_func_array([new $class, 'handle'], $args);
     }
 
