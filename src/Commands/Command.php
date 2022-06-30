@@ -194,24 +194,9 @@ abstract class Command implements CommandInterface
         return $this->getClassNameAsCommand() == $update->text();
     }
 
-    public function isOwner()
-    {
-        return $this->update->userId() == $this->ownerId;
-    }
-
     public function isGroupAnonymousBot()
     {
         return $this->update->userId() == 1087968824;
-    }
-
-    protected function isChannelPost()
-    {
-        return $this->update->channelPost?->chat?->id == $this->channelId;
-    }
-
-    protected function isGroupPost()
-    {
-        return $this->message?->chat?->id == $this->groupId;
     }
 
     protected function senderIsChannel()
