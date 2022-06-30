@@ -10,7 +10,7 @@ trait CommandsHelper
 {
     public function chatId()
     {
-        return $this->message->chat?->id;
+        return $this->message?->chat?->id;
     }
 
     public function isPrivate()
