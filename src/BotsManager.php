@@ -217,6 +217,10 @@ class BotsManager
     private function getCommandsFromFolder(string $path = null)
     {
         $path ??= base_path('app'.DIRECTORY_SEPARATOR.'TelegramHandlers');
+        
+        if (! file_exists($path)) {
+            return;
+        }
 
         $files = Finder::create()->in($path)->files();
 
