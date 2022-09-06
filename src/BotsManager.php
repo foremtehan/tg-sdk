@@ -219,7 +219,7 @@ class BotsManager
         $path ??= base_path('app'.DIRECTORY_SEPARATOR.'TelegramHandlers');
         
         if (! file_exists($path)) {
-            return;
+            return [];
         }
 
         $files = Finder::create()->in($path)->files();
