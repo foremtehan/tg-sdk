@@ -247,7 +247,7 @@ class BotsManager
     public function parseBotCommands($commands)
     {
         $globalCommands = $this->getConfig('commands', []);
-        $botCommands = ! empty($commands) ? $commands : $this->getCommandsFromFolder(is_string($commands) ? $commands : null);
+        $botCommands = file_exists($commands) ? $this->getCommandsFromFolder($commands) : $commands;
 
         return $this->deduplicateArray(array_merge($globalCommands, $botCommands));
     }
